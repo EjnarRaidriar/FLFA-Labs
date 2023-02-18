@@ -1,5 +1,5 @@
 from Grammar import Grammar
-#from Automaton import Automaton
+from Automaton import Automaton
 
 G = Grammar.Grammar( ['S', 'B', 'D'],
             ['a', 'b', 'c', 'd'],
@@ -10,4 +10,10 @@ G = Grammar.Grammar( ['S', 'B', 'D'],
             },
             'S')
 
-print(G.generateString())
+word = G.generateString()
+print(word)
+A = Automaton.FiniteAutomaton([], [], {}, "", [])
+A = Automaton.FiniteAutomaton.RG_to_NFA(A, G)
+if A.check_word(word):
+    print("check")
+
