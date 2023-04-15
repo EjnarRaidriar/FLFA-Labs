@@ -47,11 +47,11 @@ class FiniteAutomaton:
             current_state = next_state
         return bool(current_state.intersection(self.final_states))
 
-    def determine_FA(fa) -> str:
+    def determine_FA(self) -> str:
         nfa = False
         e_nfa = False
         transition_count = []
-        for k, states in fa.transitions.items():
+        for k, states in self.transitions.items():
             for state in states:
                 if k[1] == '&':
                     e_nfa = True
@@ -65,13 +65,44 @@ class FiniteAutomaton:
             return "NFA"
         return "DFA"
 
-    def closure(fa) -> set:
-        closure = set()
-        closure.add(fa.initial_state)
+    def __closure(self, q) -> list:
+        closure = list()
+        closure.append(q)
         for element in closure:
-            for k, states in fa.transitions.items():
+            for k, states in self.transitions.items():
                 for state in states:
                     if k[0] == element and k[1] == '&':
-                        closure.add(state)
+                        closure.append(state)
         return closure
+
+    def NFA_to_DFA(self):
+        # checking if it is already a DFA
+        if self.determine_FA() == 'DFA':
+            raise ValueError("This is already a DFA")
+        # initializing variables of the DFA
+        dfa_states = list()
+        dfa_transitions = {}
+        dfa_final_states = list()
+        # dfa_states[0] is the initial state of DFA
+        dfa_states.append(self.__closure(self.initial_state))
+        print('closure = ', dfa_states)
+        for dfa_state in dfa_states:
+            for letter in self.alphabet:
+                new_state = list()
+                for element in dfa_state:
+                    for key, states in self.transitions.items():
+                        if key[0] == element and letter == key[1]:
+                            for state in states:
+                                if state not in new_state:
+                                    new_state.append(state)
+                if len(new_state) > 0 and new_state not in dfa_states:
+                    dfa_states.append(new_state)
+                    dfa_transitions.setdefault(
+                        (tuple(dfa_state), letter), set()
+                    ).add(tuple(new_state))
+
+        print(dfa_states)
+        print(dfa_transitions)
+
+
 
