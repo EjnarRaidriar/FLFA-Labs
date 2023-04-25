@@ -83,26 +83,51 @@ class FiniteAutomaton:
         dfa_states = list()
         dfa_transitions = {}
         dfa_final_states = list()
+
+        # additional functions to avoid nesting
+        def update_final_states(new_state):
+            if any(item in new_state for item in self.final_states):
+                dfa_final_states.append(tuple(new_state))
+
+        def add_new_state(dfa_state, letter, new_state):
+            # values in dictionaries are not always traversed in order
+            # to avoid duplicates with different order of elements
+            # sort new_state before adding it in dfa_states
+            new_state.sort()
+            # if a new_state exists, it should be longer than 0
+            # and it should be not repeated
+            if len(new_state) > 0 and new_state not in dfa_states:
+                dfa_states.append(new_state)
+
+                dfa_transitions.setdefault(
+                    (tuple(dfa_state), letter), set()
+                ).add(tuple(new_state))
+
+                update_final_states(new_state)
+
+        def find_new_state(dfa_state, letter, new_state):
+            for element in dfa_state:
+                for key, states in self.transitions.items():
+                    # finding the necessary state in dict key
+                    if key[0] == element and letter == key[1]:
+                        for state in states:
+                            if state not in new_state:
+                                new_state.append(state)
+
         # dfa_states[0] is the initial state of DFA
         dfa_states.append(self.__closure(self.initial_state))
-        print('closure = ', dfa_states)
+        # epsilon closure is the initial state of the DFA
+        self.initial_state = dfa_states[0]
+
         for dfa_state in dfa_states:
             for letter in self.alphabet:
                 new_state = list()
-                for element in dfa_state:
-                    for key, states in self.transitions.items():
-                        if key[0] == element and letter == key[1]:
-                            for state in states:
-                                if state not in new_state:
-                                    new_state.append(state)
-                if len(new_state) > 0 and new_state not in dfa_states:
-                    dfa_states.append(new_state)
-                    dfa_transitions.setdefault(
-                        (tuple(dfa_state), letter), set()
-                    ).add(tuple(new_state))
+                find_new_state(dfa_state, letter, new_state)
+                add_new_state(dfa_state, letter, new_state)
 
-        print(dfa_states)
-        print(dfa_transitions)
+        self.states = dfa_states
+        self.transitions = dfa_transitions
+        self.final_states = dfa_final_states
 
 
 
