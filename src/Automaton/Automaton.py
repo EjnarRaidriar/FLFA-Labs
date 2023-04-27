@@ -73,26 +73,14 @@ class FiniteAutomaton:
         # checking if it is already a DFA
         if self.determine_FA() == 'DFA':
             raise ValueError("This is already a DFA")
-        # initializing variables of the DFA
-        dfa_states = list()
-        dfa_transitions = {}
 
-        def append_closure(state):
-            nonlocal new_state, closures
-            for closure in closures:
-                if state == closure[0]:
-                    new_state = new_state + closure
-                    break
-            new_state = list(set(new_state))
-            return new_state
-
+        # additional functions to avoid nesting
         def add_new_transition():
             nonlocal dfa_state, letter, new_state
             # values in dictionaries are not always traversed in order
             # to avoid duplicates with different order of elements
             # sort new_state before adding it in dfa_states
             new_state.sort()
-
             if len(new_state) > 0:
                 # making a transition if there is a state
                 dfa_transitions.setdefault(
@@ -103,9 +91,6 @@ class FiniteAutomaton:
                 if new_state not in dfa_states:
                     dfa_states.append(new_state)
 
-        dfa_final_states = list()
-
-        # additional functions to avoid nesting
         def update_final_states():
             nonlocal new_state
             if any(item in new_state for item in self.final_states)\
@@ -122,8 +107,21 @@ class FiniteAutomaton:
                             if state not in new_state:
                                 new_state = append_closure(state)
 
-        # making a list of &-closure
+        def append_closure(state):
+            nonlocal new_state, closures
+            for closure in closures:
+                if state == closure[0]:
+                    new_state = new_state + closure
+                    break
+            new_state = list(set(new_state))
+            return new_state
+
+        # initializing variables of the DFA
+        dfa_states = list()
+        dfa_transitions = {}
+        dfa_final_states = list()
         closures = list()
+        # making a list of &-closure
         for key, states in self.transitions.items():
             if key[0] in [item[0] for item in closures]:
                 continue
