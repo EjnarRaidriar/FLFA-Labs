@@ -48,21 +48,15 @@ class FiniteAutomaton:
         return bool(current_state.intersection(self.final_states))
 
     def determine_FA(self) -> str:
-        nfa = False
-        e_nfa = False
         transition_count = []
         for k, states in self.transitions.items():
             for state in states:
                 if k[1] == '&':
-                    e_nfa = True
+                    return "&-NFA"
                 if k[0] in transition_count:
-                    nfa = True
+                    return "NFA"
                 else:
                     transition_count.append(k[0])
-        if e_nfa:
-            return "&-NFA"
-        elif nfa:
-            return "NFA"
         return "DFA"
 
     def __closure(self, q) -> list:
@@ -82,48 +76,67 @@ class FiniteAutomaton:
         # initializing variables of the DFA
         dfa_states = list()
         dfa_transitions = {}
-        dfa_final_states = list()
 
-        # additional functions to avoid nesting
-        def update_final_states(new_state):
-            if any(item in new_state for item in self.final_states):
-                dfa_final_states.append(tuple(new_state))
+        def append_closure(state):
+            nonlocal new_state, closures
+            for closure in closures:
+                if state == closure[0]:
+                    new_state = new_state + closure
+                    break
+            new_state = list(set(new_state))
+            return new_state
 
-        def add_new_state(dfa_state, letter, new_state):
+        def add_new_transition():
+            nonlocal dfa_state, letter, new_state
             # values in dictionaries are not always traversed in order
             # to avoid duplicates with different order of elements
             # sort new_state before adding it in dfa_states
             new_state.sort()
-            # if a new_state exists, it should be longer than 0
-            # and it should be not repeated
-            if len(new_state) > 0 and new_state not in dfa_states:
-                dfa_states.append(new_state)
 
+            if len(new_state) > 0:
+                # making a transition if there is a state
                 dfa_transitions.setdefault(
                     (tuple(dfa_state), letter), set()
                 ).add(tuple(new_state))
+                update_final_states()
+                # adding the state into dfa_states if it's a new one
+                if new_state not in dfa_states:
+                    dfa_states.append(new_state)
 
-                update_final_states(new_state)
+        dfa_final_states = list()
 
-        def find_new_state(dfa_state, letter, new_state):
+        # additional functions to avoid nesting
+        def update_final_states():
+            nonlocal new_state
+            if any(item in new_state for item in self.final_states)\
+                    and tuple(new_state) not in dfa_final_states:
+                dfa_final_states.append(tuple(new_state))
+
+        def find_new_state():
+            nonlocal dfa_state, letter, new_state
             for element in dfa_state:
                 for key, states in self.transitions.items():
                     # finding the necessary state in dict key
                     if key[0] == element and letter == key[1]:
                         for state in states:
                             if state not in new_state:
-                                new_state.append(state)
+                                new_state = append_closure(state)
 
+        # making a list of &-closure
+        closures = list()
+        for key, states in self.transitions.items():
+            if key[0] in [item[0] for item in closures]:
+                continue
+            closures.append(self.__closure(key[0]))
         # dfa_states[0] is the initial state of DFA
-        dfa_states.append(self.__closure(self.initial_state))
-        # epsilon closure is the initial state of the DFA
+        dfa_states.append(closures[0])
         self.initial_state = dfa_states[0]
 
         for dfa_state in dfa_states:
             for letter in self.alphabet:
                 new_state = list()
-                find_new_state(dfa_state, letter, new_state)
-                add_new_state(dfa_state, letter, new_state)
+                find_new_state()
+                add_new_transition()
 
         self.states = dfa_states
         self.transitions = dfa_transitions
