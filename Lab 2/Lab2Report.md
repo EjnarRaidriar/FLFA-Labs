@@ -52,7 +52,8 @@ Type 3 - Regular grammar
 
 * The function _define_grammar({Grammar})_ defines the grammar according to Chomski hierarchy.
 In order to define it, the function uses exclusion method.
-It goes through some checks in productions and eliminates grammars with stricter rules.
+It goes through some checks in productions and eliminates grammars with stricter rules.  
+Possible outputs are: 'Type_0', 'Type_1', 'Type_2', 'Left_Regular' or 'Right_Regular'.
 
 
 * The function _determine_FA({FA})_ returns a string that represents the FA:
@@ -63,4 +64,21 @@ If it finds an epsilon transition, then it is '&-NFA'.
 At the end of the iteration of an element in the key, it's key is added to _transition_count_.
 If there is another transition from the same key, then it is 'NFA'.
 If the loop is completed the function returns 'DFA'
+
+
+* The function _NFA_to_DFA_() uses table method to convert to DFA.
+This function uses another two functions, from the FiniteAutomaton class, and nested functions.  
+First function is _determine_FA_() and used at the beginning to check if the automaton is already a DFA. It raises an error if it is one.  
+The second function is ___closure({state})_.
+This function returns epsilon closure of the parameter in form of a list.  
+Function structure:
+  1. The function checks if it is a DFA.
+  2. Declaration of inner functions: _add_new_transition()_, _update_final_states()_, _find_new_state()_, _append_closure()_.
+  3. Initialization of variables:
+  _dfa_states_, _dfa_transitions_, _dfa_final_states_ and _closures_.
+  4. Fill _closures_ list with epsilon closure of each state of the NFA.
+  5. Epsilon closure of the initial state becomes initial state of the FA.
+  6. Loop over _dfa_states_ and letters of the FA alphabet.
+  7. Inside this loop is initialized _new_state_ as list. This will be the state formed in the transition table.
+  8. 
 
