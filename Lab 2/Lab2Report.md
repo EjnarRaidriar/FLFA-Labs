@@ -80,5 +80,16 @@ Function structure:
   5. Epsilon closure of the initial state becomes initial state of the FA.
   6. Loop over _dfa_states_ and letters of the FA alphabet.
   7. Inside this loop is initialized _new_state_ as list. This will be the state formed in the transition table.
-  8. 
+  8. Function _find_new_state()_ loops over _dfa_state_ elements and nfa transitions.
+  When it finds the necessary transition it adds epsilon closure of the states in which it transits if it is not yet in _new_state_.
+  9. Appending epsilon closure is done by _append_closure()_ function.
+  It adds the closure of the parameter and excludes duplicates.
+  10. Function _add_new_transition()_ works if _new_state_ is longer than 0.
+  It sorts the _new_state_ and adds it to the _dfa_transitions_.
+  Then it updates final state list and adds _new_state_ to dfa_states if it not there yet.
+  11. Update of the final state list is done by the function _update_final_states()_.
+  This function appends _new_state_ to the _dfa_final_states_ it is not yet there and if _new_state_ contains nfa's final state.
+  12. At the end the changes are applied to the class.
+  
+
 
