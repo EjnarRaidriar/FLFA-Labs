@@ -1,10 +1,11 @@
 import random
+import string
 
 
 class Grammar:
-    def __init__(self, non_terminal, alphabet, productions, initial_symbol):
+    def __init__(self, non_terminal, terminal, productions, initial_symbol):
         self.non_terminal = non_terminal
-        self.alphabet = alphabet
+        self.terminal = terminal
         self.productions = productions
         self.initial_symbol = initial_symbol
 
@@ -78,6 +79,44 @@ class Grammar:
             return 'Type_2'
         return 'Type_1'
 
+    @staticmethod
+    def FA_to_RG(fa) -> 'Grammar':
+        # store changing from states into non-terminal through dictionary
+        name_changes = dict()
 
+        # loop through fa transitions and match each state with a non-terminal
+        alphabet_upper = list(string.ascii_uppercase)
+        letter_index = 0
+        for key, states in fa.transitions.items():
+            if key[0] not in name_changes.values():
+                name_changes.update({alphabet_upper[letter_index]: key[0]})
+                letter_index += 1
+                # by looping over the values too we will cover dead states too
+                # dead states usually are not keys
+                for state in states:
+                    if state not in name_changes.values():
+                        name_changes.update({alphabet_upper[letter_index]: state})
 
+        initial_symbol = ''
+        for prod, state in name_changes.items():
+            if state == fa.initial_state:
+                initial_symbol = prod
+                break
 
+        productions = dict()
+        # loop over keys in fa transitions and name matching
+        for key, states in fa.transitions.items():
+            for prod, fa_state in name_changes.items():
+                if key[0] == fa_state:
+                    for state in states:
+                        for rg_letter, fa_transition in name_changes.items():
+                            if state == fa_transition:
+                                if key[1] != '&':
+                                    productions.setdefault(
+                                        prod, set()
+                                    ).add(str(key[1]) + str(rg_letter))
+                                else:
+                                    productions.setdefault(
+                                        prod, set()
+                                    ).add(str(rg_letter))
+        return Grammar(list(name_changes.keys()), fa.alphabet, productions, initial_symbol)
