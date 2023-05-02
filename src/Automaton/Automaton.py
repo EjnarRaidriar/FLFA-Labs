@@ -57,7 +57,7 @@ class FiniteAutomaton:
                 if k[0] in transition_count:
                     return "NFA"
                 else:
-                    transition_count.append(k[0])
+                    transition_count.append(k)
         return "DFA"
 
     def __closure(self, q) -> list:
@@ -90,23 +90,27 @@ class FiniteAutomaton:
 
         new_transitions = dict()
         new_final_states = list()
+        new_states = list()
 
         for key, states in self.transitions.items():
             for new_name, old_name in name_changes.items():
                 if key[0] == old_name:
+                    if new_name not in new_states:
+                        new_states.append(new_name)
                     for final_state in self.final_states:
-                        if key[0] == final_state:
+                        if key[0] == final_state and new_name not in new_final_states:
                             new_final_states.append(new_name)
-                        if key[0] == self.initial_state and key[0] == old_name:
+                        if self.initial_state == old_name:
                             self.initial_state = new_name
                     for state in states:
                         for new_state, old_state in name_changes.items():
                             if state == old_state:
                                 new_transitions.setdefault(
-                                    new_name, key[1]
+                                    (new_name, key[1]), set()
                                 ).add(new_state)
         self.transitions = new_transitions
         self.states = list(new_transitions.keys())
+        self.final_states = new_final_states
 
     def NFA_to_DFA(self):
         # checking if it is already a DFA
@@ -167,7 +171,7 @@ class FiniteAutomaton:
             closures.append(self.__closure(key[0]))
         # dfa_states[0] is the initial state of DFA
         dfa_states.append(closures[0])
-        self.initial_state = dfa_states[0]
+        self.initial_state = tuple(dfa_states[0])
 
         for dfa_state in dfa_states:
             for letter in self.alphabet:
@@ -178,6 +182,6 @@ class FiniteAutomaton:
         self.states = dfa_states
         self.transitions = dfa_transitions
         self.final_states = dfa_final_states
-        # self.minimize_names()
+        self.minimize_names()
 
 
