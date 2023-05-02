@@ -80,8 +80,8 @@ class FiniteAutomaton:
             # values in dictionaries are not always traversed in order
             # to avoid duplicates with different order of elements
             # sort new_state before adding it in dfa_states
-            new_state.sort()
             if len(new_state) > 0:
+                new_state.sort()
                 # making a transition if there is a state
                 dfa_transitions.setdefault(
                     (tuple(dfa_state), letter), set()
