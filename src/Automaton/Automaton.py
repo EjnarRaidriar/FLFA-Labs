@@ -17,7 +17,8 @@ class FiniteAutomaton:
         self.initial_state = initial_state
         self.final_states = final_sates
 
-    def RG_to_NFA(self, grammar) -> 'FiniteAutomaton':
+    @staticmethod
+    def RG_to_NFA(grammar) -> 'FiniteAutomaton':
         productions = grammar.productions
         states = set(productions.keys()) | {"X"}
         alphabet = set()
@@ -69,6 +70,44 @@ class FiniteAutomaton:
                         closure.append(state)
         return closure
 
+    def minimize_names(self):
+        # checking if it is already a DFA
+        if self.determine_FA() != 'DFA':
+            raise ValueError("Only DFA can minimize names!")
+
+        # loop through transitions to mach with a new name
+        name_changes = dict()
+        state_index = 0
+        for key, states in self.transitions.items():
+            if key[0] not in name_changes.values():
+                name_changes.update({'q'+str(state_index): key[0]})
+                state_index += 1
+                # by looping over the values too we will cover dead states too
+                # dead states usually are not keys
+            for state in states:
+                if state not in name_changes.values():
+                    name_changes.update({'q'+str(state_index): state})
+
+        new_transitions = dict()
+        new_final_states = list()
+
+        for key, states in self.transitions.items():
+            for new_name, old_name in name_changes.items():
+                if key[0] == old_name:
+                    for final_state in self.final_states:
+                        if key[0] == final_state:
+                            new_final_states.append(new_name)
+                        if key[0] == self.initial_state and key[0] == old_name:
+                            self.initial_state = new_name
+                    for state in states:
+                        for new_state, old_state in name_changes.items():
+                            if state == old_state:
+                                new_transitions.setdefault(
+                                    new_name, key[1]
+                                ).add(new_state)
+        self.transitions = new_transitions
+        self.states = list(new_transitions.keys())
+
     def NFA_to_DFA(self):
         # checking if it is already a DFA
         if self.determine_FA() == 'DFA':
@@ -80,8 +119,8 @@ class FiniteAutomaton:
             # values in dictionaries are not always traversed in order
             # to avoid duplicates with different order of elements
             # sort new_state before adding it in dfa_states
+            new_state.sort()
             if len(new_state) > 0:
-                new_state.sort()
                 # making a transition if there is a state
                 dfa_transitions.setdefault(
                     (tuple(dfa_state), letter), set()
@@ -139,6 +178,6 @@ class FiniteAutomaton:
         self.states = dfa_states
         self.transitions = dfa_transitions
         self.final_states = dfa_final_states
-
+        # self.minimize_names()
 
 
