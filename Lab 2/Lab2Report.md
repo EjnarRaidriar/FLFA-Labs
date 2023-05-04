@@ -55,6 +55,17 @@ In order to define it, the function uses exclusion method.
 It goes through some checks in productions and eliminates grammars with stricter rules.  
 Possible outputs are: 'Type_0', 'Type_1', 'Type_2', 'Left_Regular' or 'Right_Regular'.
 
+* The function _FA_to_RG_() transforms a finite automaton into grammar.
+  1. Match states with terminal symbols by using a dictionary,
+  where the key is non-terminal symbol and the value is FA state. 
+  This is achieved by extracting upper letters in a new list, then loop over FA states.
+  When an unregistered state is found it is added to the _name_changes_ and upper letters index is incremented.
+  2. Store initial symbol into a new variable.
+  To find it, just loop over changed names and check if it is FA's initial state.
+  3. Productions: Loop over FA's transitions and _name_changes_.
+  Continue when starting transition (dict key) is matched with its name.
+  Loop over each transitioned state (dict values) and _name_changes_ again.
+  When matched, form the production depending on the transition.
 
 * The function _determine_FA({FA})_ returns a string that represents the FA:
 '&-NFA', 'NFA', or 'DFA'.
