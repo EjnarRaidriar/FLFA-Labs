@@ -91,7 +91,7 @@ class Grammar:
             if key[0] not in name_changes.values():
                 name_changes.update({alphabet_upper[letter_index]: key[0]})
                 letter_index += 1
-                # by looping over the values too we will cover dead states too
+                # by looping over the values we will cover dead states too
                 # dead states usually are not keys
                 for state in states:
                     if state not in name_changes.values():
@@ -107,15 +107,19 @@ class Grammar:
         # loop over keys in fa transitions and name matching
         for key, states in fa.transitions.items():
             for prod, fa_state in name_changes.items():
+                # now we have transition start state matched with its new name
                 if key[0] == fa_state:
                     for state in states:
                         for rg_letter, fa_transition in name_changes.items():
+                            # now match state with its new name
                             if state == fa_transition:
+                                # if it's not epsilon transition append terminal with non-terminal
                                 if key[1] != '&':
                                     productions.setdefault(
                                         prod, set()
                                     ).add(str(key[1]) + str(rg_letter))
                                 else:
+                                    # for epsilon transition use only terminal symbol
                                     productions.setdefault(
                                         prod, set()
                                     ).add(str(rg_letter))
