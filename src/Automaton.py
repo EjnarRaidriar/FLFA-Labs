@@ -1,25 +1,28 @@
 import sys
 
-sys.path.insert(1, "../FLFA-Labs/src/Grammar")
 import Grammar
 
 
 class FiniteAutomaton:
     def __init__(self,
-                 states,
-                 alphabet,
-                 transitions,
-                 initial_state,
-                 final_sates) -> None:
+                 states: set,
+                 alphabet: set,
+                 transitions: dict,
+                 initial_state: chr,
+                 final_sates: set) -> None:
         self.states = states
         self.alphabet = alphabet
         self.transitions = transitions
         self.initial_state = initial_state
         self.final_states = final_sates
 
+
+    def __str__(self):
+        return f"states: {self.states}\nalphabet: {self.alphabet}\ntransitions: {self.transitions}\ninitial_state: {self.initial_state}\nfinal_states: {self.final_states}"
+
     @staticmethod
-    def RG_to_NFA(grammar) -> 'FiniteAutomaton':
-        productions = grammar.productions
+    def RG_to_NFA(grammar: 'Grammar') -> 'FiniteAutomaton':
+        productions = grammar.productions()
         states = set(productions.keys()) | {"X"}
         alphabet = set()
         transitions = {}

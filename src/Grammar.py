@@ -1,36 +1,48 @@
 import random
 import string
 
+import Automaton
+
 
 class Grammar:
-    def __init__(self, non_terminal, terminal, productions, initial_symbol):
-        self.non_terminal = non_terminal
-        self.terminal = terminal
-        self.productions = productions
-        self.initial_symbol = initial_symbol
+    def __init__(self, non_terminal: list, terminal: list, productions: dict, initial_symbol: chr):
+        self._non_terminal = non_terminal
+        self._terminal = terminal
+        self._productions = productions
+        self._initial_symbol = initial_symbol
 
-    def initial_symbol(self):
-        return self.initial_symbol
+        for non_terminal, prod in self._productions.items():
+            if not isinstance(prod, list):
+                self._productions[non_terminal] = [prod]
 
-    def productions(self):
-        return self.productions
+    def __repr__(self):
+        return f"<Grammar:\n\tnon_terminal: {self._non_terminal}\n\tterminal: {self._terminal}\n\tproductions: {self._productions}\n\tinitial_symbol: {self._initial_symbol}>"
+
+    def __str__(self):
+        return f"non_terminal: {self._non_terminal}\nterminal: {self._terminal}\nproductions: {self._productions}\ninitial_symbol: {self._initial_symbol}"
+
+    def initial_symbol(self) -> chr:
+        return self._initial_symbol
+
+    def productions(self) -> dict:
+        return self._productions
 
 # Generates a word by given grammar
     def generateString(self) -> str:
-        word = self.initial_symbol
+        word = self._initial_symbol
         x = True
         while x:
             # checking if there are non-terminal states in the word
             # I did the negation of that statement in order to avoid nesting
-            if not any(n in word for n in self.non_terminal):
+            if not any(n in word for n in self._non_terminal):
                 # exiting the while loop if the word is complete
                 x = False
                 break
             # for every non-terminal state
-            for n in self.non_terminal:
+            for n in self._non_terminal:
                 if n in word:
                     # choosing a transition for corresponding non-terminal state
-                    transition = self.productions.get(n)
+                    transition = self._productions.get(n)
                     # getting a random transition
                     transition = random.choice(transition)
                     # replacing Vn with the transition
@@ -41,7 +53,7 @@ class Grammar:
         type_3 = True
         right_regular = False
         type_2 = True
-        for non_terminal, strings in self.productions.items():
+        for non_terminal, strings in self._productions.items():
             # type 3 and 2 have single non_terminal on the left side
             if len(non_terminal) > 1:
                 type_3 = False
@@ -51,7 +63,7 @@ class Grammar:
                 if len(non_terminal) > len(string):
                     return 'Type_0'
                 # type 1 can not have & unless it derives from starting symbol
-                if non_terminal != self.initial_symbol:
+                if non_terminal != self._initial_symbol:
                     if not (type_3 or type_2) and string == '&':
                         return 'Type_0'
                 # making checks from type 2 to see if it is not type 3
@@ -80,7 +92,7 @@ class Grammar:
         return 'Type_1'
 
     @staticmethod
-    def FA_to_RG(fa) -> 'Grammar':
+    def FA_to_RG(fa: 'Automaton') -> 'Grammar':
         # store changing from states into non-terminal through dictionary
         name_changes = dict()
 
