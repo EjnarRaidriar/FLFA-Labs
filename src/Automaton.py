@@ -27,12 +27,9 @@ class FiniteAutomaton:
         alphabet = set()
         transitions = {}
         initial_state = grammar.initial_symbol()
-        final_states = set("X") | \
-                       ({initial_state} if "&" in productions[initial_state] else set())
+        final_states = set("X")
         for non_terminal, prods in productions.items():
             for production in prods:
-                if production == "&":
-                    continue
                 new_transition = "X" if len(production) == 1 else production[1]
                 transitions.setdefault(
                     (non_terminal, production[0]), set()

@@ -10,7 +10,7 @@ class Grammar:
         self._terminal = terminal
         self._productions = productions
         self._initial_symbol = initial_symbol
-
+        # this fixes if dict parameter wan not initialized with values as lists
         for non_terminal, prod in self._productions.items():
             if not isinstance(prod, list):
                 self._productions[non_terminal] = [prod]
