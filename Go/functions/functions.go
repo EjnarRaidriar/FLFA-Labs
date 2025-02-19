@@ -2,6 +2,7 @@ package functions
 
 import (
 	"fmt"
+	"unicode"
 )
 
 func PrintRuneList(list []rune) {
@@ -23,4 +24,35 @@ func RuneSliceToStringSlice(runes []rune) []string {
 		stringSlice = append(stringSlice, string(r))
 	}
 	return stringSlice
+}
+
+func IsUpper(s string) bool {
+	for _, r := range s {
+		if !unicode.IsUpper(r) && unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func IsLower(s string) bool {
+	for _, r := range s {
+		if !unicode.IsLower(r) && unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func HasMultipleUpper(s string) bool {
+	upperCount := 0
+	for _, r := range s {
+		if unicode.IsUpper(r) {
+			upperCount++
+		}
+		if upperCount > 1 {
+			return true
+		}
+	}
+	return false
 }

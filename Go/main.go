@@ -4,6 +4,7 @@ import (
 	// "fmt"
 
 	"flfa/grammar"
+	"fmt"
 
 	// "flfa/automaton"
 	"flfa/conversion"
@@ -21,6 +22,7 @@ func main() {
 		},
 		'S',
 	)
+	fmt.Println(g.DefineGrammar())
 	g.Print()
 	fa := conversion.RgToFa(g)
 	fa.Print()
