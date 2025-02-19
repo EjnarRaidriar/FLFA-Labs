@@ -16,7 +16,7 @@ func RgToFa(g *grammar.Grammar) *automaton.FiniteAutomaton {
 		for _, production := range productions {
 			var newTranision automaton.Transition
 			newTranision.InitialState = nonTerminal
-			newTranision.Transition = string(production[0])
+			newTranision.Transition = rune(production[0])
 			if len(production) == 1 {
 				newTranision.NextState = "X"
 			} else {

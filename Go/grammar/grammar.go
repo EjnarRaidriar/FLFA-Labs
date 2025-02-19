@@ -2,7 +2,6 @@ package grammar
 
 import (
 	"flfa/functions"
-	"fmt"
 	"math/rand"
 	"strings"
 	"unicode"
@@ -24,22 +23,6 @@ type Grammar struct {
 	terminals     []rune
 	productions   map[string][]string
 	initialSymbol rune
-}
-
-func (g Grammar) GetProductions() map[string][]string {
-	return g.productions
-}
-
-func (g Grammar) GetTerminals() []rune {
-	return g.terminals
-}
-
-func (g Grammar) GetNonTerminals() []rune {
-	return g.nonTerminals
-}
-
-func (g Grammar) GetInitialSymbol() rune {
-	return g.initialSymbol
 }
 
 func NewGrammar(
@@ -121,30 +104,4 @@ func (g Grammar) DefineGrammar() GrammarType {
 		return Type_2
 	}
 	return Type_1
-}
-
-func (g Grammar) Print() {
-	fmt.Print("Non-Terminals: [")
-	for i, n := range g.nonTerminals {
-		if i+1 == len(g.nonTerminals) {
-			fmt.Printf("%c", n)
-			break
-		}
-		fmt.Printf("%c ", n)
-	}
-	fmt.Print("]\n")
-	fmt.Print("Terminals: [")
-	for i, t := range g.terminals {
-		if i+1 == len(g.terminals) {
-			fmt.Printf("%c", t)
-			break
-		}
-		fmt.Printf("%c ", t)
-	}
-	fmt.Print("]\n")
-	fmt.Print("Productions:\n")
-	for nonTerminal, productions := range g.productions {
-		fmt.Printf("%s: %v\n", nonTerminal, productions)
-	}
-	fmt.Printf("Initials Symbol: %c\n", g.initialSymbol)
 }

@@ -1,16 +1,17 @@
 package main
 
 import (
-	// "fmt"
-
-	"flfa/grammar"
 	"fmt"
 
-	// "flfa/automaton"
 	"flfa/conversion"
+	"flfa/grammar"
 )
 
 func main() {
+	lab1()
+}
+
+func lab1() {
 	g := grammar.NewGrammar(
 		[]rune{'S', 'B', 'C', 'D'},
 		[]rune{'a', 'b', 'c'},
@@ -22,8 +23,15 @@ func main() {
 		},
 		'S',
 	)
-	fmt.Println(g.DefineGrammar())
-	g.Print()
+	g.Println()
+	for i := 0; i < 5; i++ {
+		fmt.Printf("%s ", g.GenerateString())
+	}
+	fmt.Println()
 	fa := conversion.RgToFa(g)
-	fa.Print()
+	fa.Println()
+	var input string
+	fmt.Print("Choose a word to check: ")
+	fmt.Scanf("%s", &input)
+	fmt.Printf("%v\n", fa.CheckWord(input))
 }

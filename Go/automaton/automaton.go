@@ -1,14 +1,8 @@
 package automaton
 
-import (
-	"fmt"
-
-	"flfa/functions"
-)
-
 type Transition struct {
 	InitialState string
-	Transition   string
+	Transition   rune
 	NextState    string
 }
 
@@ -35,44 +29,23 @@ func NewFiniteAutomaton(
 		finalStates}
 }
 
-func (f FiniteAutomaton) GetInitialState() rune {
-	return f.initialState
-}
-
-func (f FiniteAutomaton) GetAlphabet() []rune {
-	return f.alphabet
-}
-
-func (f FiniteAutomaton) GetStates() []string {
-	return f.states
-}
-
-func (f FiniteAutomaton) GetTransitions() []Transition {
-	return f.transitions
-}
-
-func (f FiniteAutomaton) GetFinalStates() []string {
-	return f.finalStates
-}
-
-func (p Transition) print() {
-	fmt.Printf("(%s, %s) -> %s", p.InitialState, p.Transition, p.NextState)
-}
-
-func (f FiniteAutomaton) printTransitions() {
-	fmt.Println("Transitions:")
-	for _, n := range f.transitions {
-		n.print()
-		fmt.Println()
+func (f FiniteAutomaton) CheckWord(word string) bool {
+	var states map[string]bool = map[string]bool{string(f.initialState): true}
+	for _, letter := range word {
+		var nextStates map[string]bool = make(map[string]bool)
+		for state := range states {
+			for _, transition := range f.transitions {
+				if state == transition.InitialState && letter == transition.Transition {
+					nextStates[transition.NextState] = true
+				}
+			}
+		}
+		states = nextStates
 	}
-}
-
-func (f FiniteAutomaton) Print() {
-	fmt.Printf("States: %v %v\n", f.states, len(f.states))
-	fmt.Print("Alphabet: ")
-	functions.PrintRuneList(f.alphabet)
-	fmt.Println()
-	f.printTransitions()
-	fmt.Printf("Initial state: %c\n", f.initialState)
-	fmt.Printf("Final states: %v\n", f.finalStates)
+	for _, finalState := range f.finalStates {
+		if states[finalState] {
+			return true
+		}
+	}
+	return false
 }
