@@ -2,15 +2,47 @@ from Automaton import FiniteAutomaton
 from Grammar import Grammar
 
 
-def lab1():
+def lab2():
     g = Grammar(
-        ['S', 'B', 'C', 'D'],
-        ['a', 'b', 'c'],
+        {'S', 'B', 'C', 'D'},
+        {'a', 'b', 'c'},
         {
             'S': 'aB',
-            'B': ['bS', 'aC', 'c'],
+            'B': {'bS', 'aC', 'c'},
             'C': 'bD',
-            'D': ['c', 'aC']
+            'D': {'c', 'aC'}
+        },
+        'S'
+    )
+    print(g)
+    nfa = FiniteAutomaton.RG_to_NFA(g)
+    g = Grammar.FA_to_RG(nfa)
+    print(g)
+    nfa = FiniteAutomaton(
+        states={"q0", "q1", "q2"},
+        alphabet={"a", "b", "c"},
+        transitions={
+            ("q0", "a"): {"q1"},
+            ("q1", "c"): {"q1"},
+            ("q1", "b"): {"q2"},
+            ("q2", "a"): {"q2"},
+            ("q0", "a"): {"q0"},
+            ("q1", "a"): {"q0"},
+        },
+        initial_state="q0",
+        final_sates={"q2"}
+    )
+
+
+def lab1():
+    g = Grammar(
+        {'S', 'B', 'C', 'D'},
+        {'a', 'b', 'c'},
+        {
+            'S': 'aB',
+            'B': {'bS', 'aC', 'c'},
+            'C': 'bD',
+            'D': {'c', 'aC'}
         },
         'S'
     )
@@ -18,17 +50,15 @@ def lab1():
     for i in range(5):
         print(g.generateString(), end=", ")
     fa = FiniteAutomaton.RG_to_NFA(g)
+    print(fa)
     print()
     userinput = input("Choose a word to check if it can be obtained from FA: ")
     print(fa.check_word(userinput))
 
 
-def main():
-    lab1()
-
-
 if __name__ == "__main__":
-    main()
+    lab1()
+    # lab2()
 
 # RG_to_NFA = FiniteAutomaton.RG_to_NFA
 # determine_FA = FiniteAutomaton.determine_FA

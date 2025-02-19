@@ -1,27 +1,40 @@
-import sys
+from __future__ import annotations
 
 import Grammar
-
 
 class FiniteAutomaton:
     def __init__(self,
                  states: set,
                  alphabet: set,
                  transitions: dict,
-                 initial_state: chr,
+                 initial_state: str,
                  final_sates: set) -> None:
-        self.states = states
-        self.alphabet = alphabet
-        self.transitions = transitions
-        self.initial_state = initial_state
-        self.final_states = final_sates
-
+        self._states = states
+        self._alphabet = alphabet
+        self._transitions = transitions
+        self._initial_state = initial_state
+        self._final_states = final_sates
 
     def __str__(self):
-        return f"states: {self.states}\nalphabet: {self.alphabet}\ntransitions: {self.transitions}\ninitial_state: {self.initial_state}\nfinal_states: {self.final_states}"
+        return f"states: {self._states}\nalphabet: {self._alphabet}\ntransitions: {self._transitions}\ninitial_state: {self._initial_state}\nfinal_states: {self._final_states}"
+
+    def alphabet(self) -> set:
+        return self._alphabet
+
+    def transitions(self) -> dict:
+        return self._transitions
+
+    def states(self) -> set:
+        return self._states
+
+    def initial_state(self) -> str:
+        return self._initial_state
+
+    def final_states(self) -> set:
+        return self._final_states
 
     @staticmethod
-    def RG_to_NFA(grammar: 'Grammar') -> 'FiniteAutomaton':
+    def RG_to_NFA(grammar: Grammar.Grammar) -> FiniteAutomaton:
         productions = grammar.productions()
         states = set(productions.keys()) | {"X"}
         alphabet = set()
@@ -38,19 +51,19 @@ class FiniteAutomaton:
         return FiniteAutomaton(states, alphabet, transitions, initial_state, final_states)
 
     def check_word(self, word) -> bool:
-        current_state = {self.initial_state}
+        current_state = {self._initial_state}
         for symbol in word:
             next_state = set()
             for state in current_state:
                 next_state.update(
-                    self.transitions.get((state, symbol), set())
+                    self._transitions.get((state, symbol), set())
                 )
             current_state = next_state
-        return bool(current_state.intersection(self.final_states))
+        return bool(current_state.intersection(self._final_states))
 
     def determine_FA(self) -> str:
         transition_count = []
-        for k, states in self.transitions.items():
+        for k, states in self._transitions.items():
             for state in states:
                 if k[1] == '&':
                     return "&-NFA"
@@ -64,7 +77,7 @@ class FiniteAutomaton:
         closure = list()
         closure.append(q)
         for element in closure:
-            for k, states in self.transitions.items():
+            for k, states in self._transitions.items():
                 for state in states:
                     if k[0] == element and k[1] == '&':
                         closure.append(state)
@@ -78,39 +91,39 @@ class FiniteAutomaton:
         # loop through transitions to mach with a new name
         name_changes = dict()
         state_index = 0
-        for key, states in self.transitions.items():
+        for key, states in self._transitions.items():
             if key[0] not in name_changes.values():
-                name_changes.update({'q'+str(state_index): key[0]})
+                name_changes.update({'q' + str(state_index): key[0]})
                 state_index += 1
                 # by looping over the values too we will cover dead states too
                 # dead states usually are not keys
             for state in states:
                 if state not in name_changes.values():
-                    name_changes.update({'q'+str(state_index): state})
+                    name_changes.update({'q' + str(state_index): state})
 
         new_transitions = dict()
         new_final_states = list()
         new_states = list()
 
-        for key, states in self.transitions.items():
+        for key, states in self._transitions.items():
             for new_name, old_name in name_changes.items():
                 if key[0] == old_name:
                     if new_name not in new_states:
                         new_states.append(new_name)
-                    for final_state in self.final_states:
+                    for final_state in self._final_states:
                         if key[0] == final_state and new_name not in new_final_states:
                             new_final_states.append(new_name)
-                        if self.initial_state == old_name:
-                            self.initial_state = new_name
+                        if self._initial_state == old_name:
+                            self._initial_state = new_name
                     for state in states:
                         for new_state, old_state in name_changes.items():
                             if state == old_state:
                                 new_transitions.setdefault(
                                     (new_name, key[1]), set()
                                 ).add(new_state)
-        self.transitions = new_transitions
-        self.states = list(new_transitions.keys())
-        self.final_states = new_final_states
+        self._transitions = new_transitions
+        self._states = list(new_transitions.keys())
+        self._final_states = new_final_states
 
     def NFA_to_DFA(self):
         # checking if it is already a DFA
@@ -136,14 +149,14 @@ class FiniteAutomaton:
 
         def update_final_states():
             nonlocal new_state
-            if any(item in new_state for item in self.final_states)\
+            if any(item in new_state for item in self._final_states) \
                     and tuple(new_state) not in dfa_final_states:
                 dfa_final_states.append(tuple(new_state))
 
         def find_new_state():
             nonlocal dfa_state, letter, new_state
             for element in dfa_state:
-                for key, states in self.transitions.items():
+                for key, states in self._transitions.items():
                     # finding the necessary state in dict key
                     if key[0] == element and letter == key[1]:
                         for state in states:
@@ -165,23 +178,21 @@ class FiniteAutomaton:
         dfa_final_states = list()
         closures = list()
         # making a list of &-closure
-        for key, states in self.transitions.items():
+        for key, states in self._transitions.items():
             if key[0] in [item[0] for item in closures]:
                 continue
             closures.append(self.__closure(key[0]))
         # dfa_states[0] is the initial state of DFA
         dfa_states.append(closures[0])
-        self.initial_state = tuple(dfa_states[0])
+        self._initial_state = tuple(dfa_states[0])
 
         for dfa_state in dfa_states:
-            for letter in self.alphabet:
+            for letter in self._alphabet:
                 new_state = list()
                 find_new_state()
                 add_new_transition()
 
-        self.states = dfa_states
-        self.transitions = dfa_transitions
-        self.final_states = dfa_final_states
+        self._states = dfa_states
+        self._transitions = dfa_transitions
+        self._final_states = dfa_final_states
         self.minimize_names()
-
-
