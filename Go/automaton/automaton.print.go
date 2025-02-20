@@ -23,6 +23,6 @@ func (f FiniteAutomaton) Println() {
 	functions.PrintRuneList(f.alphabet)
 	fmt.Println()
 	f.printTransitions()
-	fmt.Printf("Initial state: %c\n", f.initialState)
+	fmt.Printf("Initial state: %s\n", f.initialState)
 	fmt.Printf("Final states: %v\n", f.finalStates)
 }

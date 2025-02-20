@@ -10,7 +10,7 @@ type FiniteAutomaton struct {
 	states       []string
 	alphabet     []rune
 	transitions  []Transition
-	initialState rune
+	initialState string
 	finalStates  []string
 }
 
@@ -18,7 +18,7 @@ func NewFiniteAutomaton(
 	states []string,
 	alpahbet []rune,
 	transitions []Transition,
-	initialState rune,
+	initialState string,
 	finalStates []string) *FiniteAutomaton {
 
 	return &FiniteAutomaton{
@@ -30,7 +30,7 @@ func NewFiniteAutomaton(
 }
 
 func (f FiniteAutomaton) CheckWord(word string) bool {
-	var states map[string]bool = map[string]bool{string(f.initialState): true}
+	var states map[string]bool = map[string]bool{f.initialState: true}
 	for _, letter := range word {
 		var nextStates map[string]bool = make(map[string]bool)
 		for state := range states {

@@ -1,6 +1,6 @@
 package automaton
 
-func (f FiniteAutomaton) GetInitialState() rune {
+func (f FiniteAutomaton) GetInitialState() string {
 	return f.initialState
 }
 
