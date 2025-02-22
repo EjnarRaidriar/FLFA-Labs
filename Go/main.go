@@ -41,6 +41,7 @@ func lab2() {
 		"q0",
 		[]string{"q2"},
 	)
+	fmt.Println(fa.DetermineFA())
 	g = conversion.FaToRg(fa)
 	g.Println()
 }

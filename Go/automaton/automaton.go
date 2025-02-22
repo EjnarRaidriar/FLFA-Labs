@@ -29,7 +29,7 @@ func NewFiniteAutomaton(
 		finalStates}
 }
 
-func (f FiniteAutomaton) CheckWord(word string) bool {
+func (f *FiniteAutomaton) CheckWord(word string) bool {
 	var states map[string]bool = map[string]bool{f.initialState: true}
 	for _, letter := range word {
 		var nextStates map[string]bool = make(map[string]bool)
@@ -48,4 +48,24 @@ func (f FiniteAutomaton) CheckWord(word string) bool {
 		}
 	}
 	return false
+}
+
+func (f *FiniteAutomaton) DetermineFA() string {
+	transitions := make(map[string]rune)
+	isNFA := false
+	for _, transition := range f.transitions {
+		if transition.Transition == '&' {
+			return "&-NFA"
+		}
+		if initialState, ok := transitions[transition.InitialState]; ok &&
+			initialState == transition.Transition {
+			isNFA = true
+		} else {
+			transitions[transition.InitialState] = transition.Transition
+		}
+	}
+	if isNFA {
+		return "NFA"
+	}
+	return "DFA"
 }
