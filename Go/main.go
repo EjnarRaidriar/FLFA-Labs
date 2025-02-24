@@ -31,12 +31,12 @@ func lab2() {
 		[]string{"q0", "q1", "q2"},
 		[]rune{'a', 'b', 'c'},
 		[]automaton.Transition{
-			{InitialState: "q0", Transition: 'a', NextState: "q1"},
-			{InitialState: "q1", Transition: 'c', NextState: "q1"},
-			{InitialState: "q1", Transition: 'b', NextState: "q2"},
-			{InitialState: "q2", Transition: 'a', NextState: "q2"},
 			{InitialState: "q0", Transition: 'a', NextState: "q0"},
+			{InitialState: "q0", Transition: 'a', NextState: "q1"},
 			{InitialState: "q1", Transition: 'a', NextState: "q0"},
+			{InitialState: "q1", Transition: 'b', NextState: "q2"},
+			{InitialState: "q1", Transition: 'c', NextState: "q1"},
+			{InitialState: "q2", Transition: 'a', NextState: "q2"},
 		},
 		"q0",
 		[]string{"q2"},
@@ -44,6 +44,8 @@ func lab2() {
 	fmt.Println(fa.DetermineFA())
 	g = conversion.FaToRg(fa)
 	g.Println()
+	fa = automaton.MakeDFA(*fa)
+	fa.Println()
 }
 
 func lab1() {

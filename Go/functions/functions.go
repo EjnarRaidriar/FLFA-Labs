@@ -1,7 +1,9 @@
 package functions
 
 import (
+	"cmp"
 	"fmt"
+	"slices"
 	"unicode"
 )
 
@@ -51,6 +53,36 @@ func HasMultipleUpper(s string) bool {
 			upperCount++
 		}
 		if upperCount > 1 {
+			return true
+		}
+	}
+	return false
+}
+
+func KeyList[K cmp.Ordered, V any](m map[K]V) []K {
+	keys := make([]K, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	slices.Sort(keys)
+	return keys
+}
+
+func RemoveDuplicates[T comparable](list []T) []T {
+	keys := make(map[T]bool)
+	newList := []T{}
+	for _, value := range list {
+		if _, ok := keys[value]; !ok {
+			keys[value] = true
+			newList = append(newList, value)
+		}
+	}
+	return newList
+}
+
+func ContainsMap[K cmp.Ordered, V any](list []map[K]V, m map[K]V) bool {
+	for _, element := range list {
+		if slices.Compare(KeyList(element), KeyList(m)) == 0 {
 			return true
 		}
 	}
