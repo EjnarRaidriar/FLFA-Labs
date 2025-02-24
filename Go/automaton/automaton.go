@@ -141,19 +141,15 @@ func MakeDFA(f FiniteAutomaton) *FiniteAutomaton {
 		}
 		i++
 	}
-	// fmt.Printf("DFA states: %v\n", dfaStatesMap)
 	dfaStates := make([]string, 0, len(dfaStatesMap))
 	for _, stateMap := range dfaStatesMap {
 		state := functions.KeyList(stateMap)
 		dfaStates = append(dfaStates, joinStates(state))
-		// fmt.Printf("States: %v\n", dfaStates)
 		for _, finalState := range f.finalStates {
 			if slices.Contains(state, finalState) {
 				dfaFinalStates = append(dfaFinalStates, joinStates(state))
 			}
 		}
 	}
-	dfaStates = functions.RemoveDuplicates(dfaStates)
-	dfaFinalStates = functions.RemoveDuplicates(dfaFinalStates)
 	return NewFiniteAutomaton(dfaStates, f.alphabet, dfaTransitions, f.initialState, dfaFinalStates)
 }
