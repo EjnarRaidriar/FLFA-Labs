@@ -77,7 +77,6 @@ func (g Grammar) DefineGrammar() GrammarType {
 				prod != "&" {
 				return Type_0
 			}
-			lastLetter := rune(prod[prodLen-1])
 			if isType2 && functions.IsLower(prod) == false {
 				if functions.IsUpper(prod) {
 					isType3 = false
@@ -85,6 +84,7 @@ func (g Grammar) DefineGrammar() GrammarType {
 					isType3 = false
 				}
 			}
+			lastLetter := rune(prod[prodLen-1])
 			if isType3 && prodLen > 1 {
 				if unicode.IsUpper(lastLetter) {
 					isRightLiniar = true

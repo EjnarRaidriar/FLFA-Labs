@@ -35,7 +35,6 @@ func RgToFa(g *grammar.Grammar) *automaton.FiniteAutomaton {
 }
 
 func FaToRg(f *automaton.FiniteAutomaton) *grammar.Grammar {
-	// todo convert all transitions initial state string into single character
 	conversionMap := statesToNonTerminals(f.GetStates(), f.GetInitialState())
 	var nonTerminals []rune
 	productions := make(map[string][]string)
