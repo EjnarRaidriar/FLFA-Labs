@@ -1,0 +1,58 @@
+[b]Character stats[/b]
+*stat_chart
+    percent Health
+    percent Stealth
+
+[b]Combat abilities[/b]
+*stat_chart
+    percent Combat
+*if MainWeapon != " "
+    *stat_chart
+        percent Mastery $!{MainWeapon}
+
+[b]Personality[/b]
+*stat_chart
+    opposed_pair Caution
+     Cautions
+     Rash
+
+[b]Weapons[/b]
+
+*if MainWeapon != " "
+    Main weapon: $!{MainWeapon}
+    
+    Weapon type: $!{MW_Type}
+    
+    Crossguard: $!{MW_Crossguard}
+    
+    Weight: $!{MW_Weight} kg
+    
+    Length: $!{MW_Length} cm
+    
+    Blade Length: $!{MW_Blade_Length} cm
+    *set MW_Grip_Length MW_Length - MW_Blade_Length
+    
+    *if (One_Handed = 1) and (Two_Handed = 1)
+        Grip Type: Both One and Two-handed
+        *goto next
+    *elseif (One_Handed = 1)
+        Grip Type: One-handed
+        *goto next
+    *elseif (Two_Handed = 1)
+        Grip Type: Two-hadned
+        *goto next
+    *else
+        Type: ERROR
+        *goto next
+    
+    *label next
+    *stat_chart
+        percent MW_Thrust Thrust
+        percent MW_Slice Slice
+        percent MW_Cut Cut
+        percent MW_Stun Stun
+    *goto next2
+*else
+    You don't have a weapon yet.
+    *goto next2
+*label next2

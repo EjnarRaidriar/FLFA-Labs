@@ -2,15 +2,37 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"flfa/automaton"
 	"flfa/conversion"
 	"flfa/grammar"
+	"flfa/lexer"
 )
 
 func main() {
 	// lab1()
-	lab2()
+	// lab2()
+	lab3()
+}
+
+func lab3() {
+	content, err := os.ReadFile("../choicescript.txt")
+	if err != nil {
+		fmt.Println("Error reading file: ", err)
+		return
+	}
+	text := string(content)
+
+	l := lexer.NewLexer(strings.NewReader(text))
+	for {
+		token := l.Next()
+		fmt.Printf("Line %d, Col %d: %s - %q\n", token.Line, token.Column, lexer.TokenToString(token.Type), token.Value)
+		if token.Type == lexer.EOF {
+			break
+		}
+	}
 }
 
 func lab2() {
@@ -37,6 +59,7 @@ func lab2() {
 			{InitialState: "q1", Transition: 'b', NextState: "q2"},
 			{InitialState: "q1", Transition: 'c', NextState: "q1"},
 			{InitialState: "q2", Transition: 'a', NextState: "q2"},
+			{InitialState: "q2", Transition: '&', NextState: "q2"},
 		},
 		"q0",
 		[]string{"q2"},
