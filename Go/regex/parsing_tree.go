@@ -1,4 +1,4 @@
-package regex_lexer
+package regex
 
 import (
 	"errors"

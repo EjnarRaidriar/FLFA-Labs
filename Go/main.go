@@ -9,7 +9,7 @@ import (
 	"flfa/conversion"
 	"flfa/grammar"
 	"flfa/lexer"
-	"flfa/regex/regex_lexer"
+	"flfa/regex"
 )
 
 func main() {
@@ -20,16 +20,20 @@ func main() {
 }
 
 func lab4() {
-	// regEx := "(a|b)(c|d)E+G?"
-	// regEx := "P(Q|R|S)T(uv|w|x)*Z+"
-	regEx := "1(0|1)*2(3|4)^536"
-	tree, err := regex_lexer.NewParseTree(regEx)
+	regEx := "(a|b)(c|d)E+G?"
+	printRegex(regEx)
+	regEx = "P(Q|R|S)T(uv|w|x)*Z+"
+	printRegex(regEx)
+	regEx = "1(0|1)*2(3|4)^536"
+	printRegex(regEx)
+}
+
+func printRegex(regEx string) {
+	word, err := regex.GenerateString(regEx)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(tree.String())
-	// word := regex.GenerateString(regEx)
-	// fmt.Printf("RegEx: %s\nWord: %s", regEx, word)
+	fmt.Printf("RegEx: %s\nWord: %s\n", regEx, word)
 }
 
 func lab3() {
