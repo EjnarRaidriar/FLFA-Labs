@@ -16,7 +16,17 @@ func main() {
 	// lab1()
 	// lab2()
 	// lab3()
-	lab4()
+	// lab4()
+	lab5()
+}
+
+func lab5() {
+	regEx := "(a|b)(c|d)*"
+	tree, err := regex.NewParseTree(regEx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(tree.AstString())
 }
 
 func lab4() {

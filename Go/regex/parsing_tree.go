@@ -97,3 +97,36 @@ func (t *ParseTreeNode) String() string {
 
 	return result.String()
 }
+
+func (t *ParseTreeNode) AstString() string {
+	if t == nil {
+		return ""
+	}
+
+	var result strings.Builder
+	var postorder func(n *ParseTreeNode, indent int)
+	postorder = func(n *ParseTreeNode, indent int) {
+		if n != nil {
+			if n.RightSide != nil {
+				postorder(n.RightSide, indent+4)
+			}
+			if indent != 0 {
+				result.WriteString(strings.Repeat(" ", indent))
+			}
+			if n.RightSide != nil {
+				result.WriteString(" /\n")
+				result.WriteString(strings.Repeat(" ", indent))
+			}
+			result.WriteString(string(n.Value))
+			result.WriteString("\n")
+			if n.LeftSide != nil {
+				result.WriteString(strings.Repeat(" ", indent))
+				result.WriteString(" \\\n")
+				postorder(n.LeftSide, indent+4)
+			}
+		}
+	}
+
+	postorder(t, 0)
+	return result.String()
+}
